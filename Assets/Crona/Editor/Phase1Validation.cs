@@ -77,6 +77,10 @@ public static class Phase1Validation
                                     else if (value.objectReferenceValue == null)
                                         result.errors.Add(entry.path + ": unassigned " + go.name + "." + field);
                                 }
+                            GameManager manager = component as GameManager;
+                            if (manager != null && manager.InventoryCanvas != null &&
+                                manager.InventoryCanvas.GetComponentInParent<InventoryManager>() == null)
+                                result.errors.Add(entry.path + ": inventory panel has no parent InventoryManager.");
                             StartDataBase database = component as StartDataBase;
                             if (database != null && database.usesLegacyFloorDoor && database.F1DoorAnimator == null)
                                 result.errors.Add(entry.path + ": legacy database gate has no Animator.");

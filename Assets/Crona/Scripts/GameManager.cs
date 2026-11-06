@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
-        InventoryManager inventory = InventoryCanvas.GetComponent<InventoryManager>();
+        InventoryManager inventory = InventoryCanvas.GetComponentInParent<InventoryManager>();
         inventory.EnsureLoaded();
         inventory.SaveInventory();
         GameProgress.EnterFloor(gameObject.scene.name);
@@ -581,7 +581,7 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadSceneF2()
     {
 
-        InventoryCanvas.GetComponent<InventoryManager>().SaveInventory();
+        InventoryCanvas.GetComponentInParent<InventoryManager>().SaveInventory();
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF2", LoadSceneMode.Single);
 
         // Wait until the asynchronous scene fully loads
@@ -677,7 +677,7 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadSceneF1()
     {
 
-        InventoryCanvas.GetComponent<InventoryManager>().SaveInventory();
+        InventoryCanvas.GetComponentInParent<InventoryManager>().SaveInventory();
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF1", LoadSceneMode.Single);
 
         // Wait until the asynchronous scene fully loads
