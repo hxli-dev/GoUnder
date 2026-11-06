@@ -6,4 +6,3 @@
     <Compile Include="../../../Assets/Crona/Scripts/Inventory/Item/ScriptableObject/ItemData_SO.cs" />
   </ItemGroup>
 </Project>
-
