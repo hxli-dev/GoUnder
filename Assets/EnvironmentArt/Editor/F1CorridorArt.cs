@@ -10,7 +10,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 
 // Visual authoring only. Existing transforms, colliders, scripts and cameras are preserved.
-public static class F1CorridorArt
+public static partial class F1CorridorArt
 {
     const string Root = "Assets/EnvironmentArt/F1";
     const string Preview = Root + "/Preview/MainSceneF1_ArtPreview.unity";

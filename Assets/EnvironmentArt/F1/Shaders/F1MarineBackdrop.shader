@@ -6,6 +6,7 @@ Shader "GoUnder/Art/Marine Backdrop"
   Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
   Pass
   {
+   Cull Off
    HLSLPROGRAM
    #pragma vertex vert
    #pragma fragment frag
