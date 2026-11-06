@@ -13,6 +13,7 @@ public class CommunicationInteract : MonoBehaviour
     private int IsInPos = 0;
     private Camera MainCam;
     private bool IsInside;
+    private bool previousMoveDisabled;
     public bool FocusOnScreen = false;
 
     public TMP_InputField IslandCode;
@@ -54,7 +55,7 @@ public class CommunicationInteract : MonoBehaviour
 
     private void Update()
     {
-        if (FocusOnScreen && Input.GetKey(KeyCode.Escape))
+        if (FocusOnScreen && IsInPos == 2 && Input.GetKeyDown(KeyCode.Escape))
         {
             ExitCommunicationSystem();
         }
@@ -70,6 +71,7 @@ public class CommunicationInteract : MonoBehaviour
 
     public void ExitCommunicationSystem()
     {
+        if (IsInPos != 2) return;
         pauseMenuEnable = false;
         EnablePauseMenu();
         FocusOnScreen = false;
@@ -165,6 +167,7 @@ public class CommunicationInteract : MonoBehaviour
         Transformee.rotation = targetRotation;
 
         IsInPos = 0;
+        PlayerMovement.Instance.moveDisabled = previousMoveDisabled;
         //UseECanvas.SetActive(true);
         Crosshair.SetActive(true);
         MainCam.enabled = true;

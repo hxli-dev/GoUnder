@@ -10,6 +10,8 @@ public class ItemData_SO : ScriptableObject
 {
     public ItemType itemType;
 
+    [SerializeField] private string itemId;
+    public string Id { get { return itemId; } }
     public string itemName;
 
     public Sprite itemIcon_1100_700;
@@ -27,7 +29,13 @@ public class ItemData_SO : ScriptableObject
 
     public static ItemData_SO LoadItemDataByName(string itemName)
     {
-        return Resources.Load<ItemData_SO>("Items/" + itemName);
+        if (string.IsNullOrEmpty(itemName)) return null;
+        // Accept old display-name saves, including Communication Code's spaced name.
+        foreach (ItemData_SO item in Resources.LoadAll<ItemData_SO>("Items"))
+            if (item.Id == itemName || item.name == itemName || item.itemName == itemName)
+                return item;
+        Debug.LogError("Unknown saved inventory item: " + itemName);
+        return null;
     }
 
 }

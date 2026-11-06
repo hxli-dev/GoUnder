@@ -730432,6 +730432,8 @@ MonoBehaviour:
   - {fileID: 516217320}
   - {fileID: 1091123121}
   - {fileID: 912729652}
+  - {fileID: 1212824387}
+  - {fileID: 734699395}
   soundEffectsAudio:
   - {fileID: 1931906726}
   - {fileID: 2089502955}

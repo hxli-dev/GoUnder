@@ -8,6 +8,12 @@ public class SliderChange : MonoBehaviour
     public Slider slider;
     float fillTime = 0f;
     public CheckInput checkInput;
+    void OnEnable()
+    {
+        fillTime = 0f;
+        slider.value = slider.minValue;
+    }
+
     public void Update()
     {
         slider.value = Mathf.Lerp(slider.minValue, slider.maxValue, fillTime);

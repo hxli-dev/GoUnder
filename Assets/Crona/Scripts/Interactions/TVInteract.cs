@@ -9,6 +9,9 @@ public class TVInteract : MonoBehaviour
     public GameObject crosshairCanvas;
 
     private bool TVOn = false;
+    private bool busy;
+    private bool previousPause;
+    private bool previousInventory;
 
 
     private void Update()
@@ -18,6 +21,7 @@ public class TVInteract : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 TVOn = false;
+                busy = true;
                 EPanel.SetActive(false);
                 TVCam.SetActive(false);
                 StartCoroutine(WaitCameraOut());
@@ -30,8 +34,13 @@ public class TVInteract : MonoBehaviour
     {
         if (TVCam != null)
         {
-            if (!TVOn)
+            if (!TVOn && !busy)
             {
+                busy = true;
+                previousPause = GameManager.Instance.pauseMenuEnabled;
+                previousInventory = GameManager.Instance.inventoryEnabled;
+                GameManager.Instance.pauseMenuEnabled = false;
+                GameManager.Instance.inventoryEnabled = false;
                 TVCam.SetActive(true);
                 StartCoroutine(WaitCameraIn());
                 GameManager.Instance.LockPlayerCam();
@@ -56,6 +65,7 @@ public class TVInteract : MonoBehaviour
         yield return new WaitForSeconds(1f);
         EPanel.SetActive(true);
         TVOn = true;
+        busy = false;
     }
 
     IEnumerator WaitCameraOut()
@@ -66,5 +76,8 @@ public class TVInteract : MonoBehaviour
         crosshairCanvas.SetActive(true);
         GameManager.Instance.UnlockPlayerCam();
         PlayerInteraction.Instance.interactAllowed = true;
+        GameManager.Instance.pauseMenuEnabled = previousPause;
+        GameManager.Instance.inventoryEnabled = previousInventory;
+        busy = false;
     }
 }

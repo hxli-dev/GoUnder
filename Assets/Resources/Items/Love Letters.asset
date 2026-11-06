@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: Love Letters
   m_EditorClassIdentifier: 
+  itemId: 10f37c87388c1a042a5f7c4fbc4ce19e
   itemType: 2
   itemName: Love Letters
   itemIcon_1100_700: {fileID: 0}

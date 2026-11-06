@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: Atlas Card
   m_EditorClassIdentifier: 
+  itemId: 6accf8d040392e843bbc26bdd1c62a87
   itemType: 0
   itemName: Atlas Card
   itemIcon_1100_700: {fileID: 21300000, guid: 400eb4f96ecbd024791d42f7db2c8fa5, type: 3}

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: tsunami forecast
   m_EditorClassIdentifier: 
+  itemId: a4141655af556544e8a99fd05b68cbf4
   itemType: 1
   itemName: tsunami forecast
   itemIcon_1100_700: {fileID: 21300000, guid: be036e12792f73047913ff6319ba3f3d, type: 3}

@@ -8816,7 +8816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 2084561656}
-  directionalLight: {fileID: 705507994}
+  globalVolume: {fileID: 1927502135}
 --- !u!114 &303019316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35177,7 +35177,7 @@ MonoBehaviour:
   crosshairCanvas: {fileID: 1900657886}
   mainCam: {fileID: 963194225}
   pauseMenuEnabled: 1
-  isInEditor: 1
+  isInEditor: 0
 --- !u!114 &1112675371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51911,6 +51911,8 @@ MonoBehaviour:
   slider_sound: {fileID: 135635829}
   backgroundAudio:
   - {fileID: 516217320}
+  - {fileID: 1212824387}
+  - {fileID: 734699395}
   soundEffectsAudio:
   - {fileID: 1931906726}
   - {fileID: 2089502955}

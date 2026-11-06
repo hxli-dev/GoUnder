@@ -15,6 +15,8 @@ public class StartDataBase : MonoBehaviour
     public MailSystem InboxMail;
 
     public Animator F1DoorAnimator;
+    [Tooltip("Legacy continuous-level gate. Separate-floor scenes progress through their existing video transition instead.")]
+    public bool usesLegacyFloorDoor = true;
 
     
 
@@ -57,7 +59,16 @@ TextToCheck4.text == FirstAnswer4)
                 LoadingBar.SetActive(true);
                 StartCoroutine(NextpageCo());
 
-                F1DoorAnimator.SetBool("F1DoorOpen", true);
+                if (usesLegacyFloorDoor)
+                {
+                    if (F1DoorAnimator == null)
+                    {
+                        Debug.LogError("Legacy database gate requires its original F1Door Animator.", this);
+                        return;
+                    }
+                    F1DoorAnimator.SetBool("F1DoorOpen", true);
+                }
+                AnswerStage = 2;
                 //clear out the answers
                 TextToCheck1.text = "";
                 TextToCheck2.text = "";

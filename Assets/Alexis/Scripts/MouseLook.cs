@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
@@ -8,59 +6,37 @@ public class MouseLook : MonoBehaviour
 {
     public Slider slider_x;
     public Slider slider_y;
-    private static readonly string FirstPlay = "FirstPlay";
-    private static readonly string xAxis = "xAxis";
-    private static readonly string yAxis = "yAxis";
-    private int firstPlayInt;
-    private float xAxisFloat = 500f;
-    private float yAxisFloat = 500f;
     public CinemachineVirtualCamera cinemachineVirtualCamera;
+    private bool initialized;
 
-    void Start()
+    void Start() { InitializeSettings(); }
+
+    public void InitializeSettings()
     {
-        firstPlayInt = PlayerPrefs.GetInt(FirstPlay);
-
-        if (firstPlayInt == 0)
-        {
-            xAxisFloat = 500f;
-            yAxisFloat = 500f;
-            PlayerPrefs.SetFloat(xAxis, xAxisFloat);
-            PlayerPrefs.SetFloat(yAxis, yAxisFloat);
-            PlayerPrefs.SetInt(FirstPlay, -1);
-            slider_x.value = xAxisFloat;
-            slider_y.value = yAxisFloat;
-            cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = xAxisFloat;
-            cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = yAxisFloat;
-        }
-        else
-        {
-            xAxisFloat = PlayerPrefs.GetFloat(xAxis);
-            slider_x.value = xAxisFloat;
-            yAxisFloat = PlayerPrefs.GetFloat(yAxis);
-            slider_y.value = yAxisFloat;
-            cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = xAxisFloat;
-            cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = yAxisFloat;
-        }
-        
+        if (initialized) return;
+        slider_x.SetValueWithoutNotify(PlayerPrefs.GetFloat("xAxis", 500f));
+        slider_y.SetValueWithoutNotify(PlayerPrefs.GetFloat("yAxis", 500f));
+        initialized = true;
+        UpdateControl();
     }
 
     public void SaveControlSettings()
     {
-        PlayerPrefs.SetFloat(xAxis, slider_x.value);
-        PlayerPrefs.SetFloat(yAxis, slider_y.value);
+        if (!initialized) return;
+        PlayerPrefs.SetFloat("xAxis", slider_x.value);
+        PlayerPrefs.SetFloat("yAxis", slider_y.value);
+        PlayerPrefs.Save();
     }
 
-    void OnApplicationFocus(bool inFocus)
-    {
-        if (!inFocus)
-        {
-            SaveControlSettings();
-        }
-    }
+    void OnApplicationFocus(bool inFocus) { if (!inFocus) SaveControlSettings(); }
+    void OnDisable() { SaveControlSettings(); }
 
     public void UpdateControl()
     {
-        cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = xAxisFloat;
-        cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = yAxisFloat;
+        if (!initialized) return;
+        SaveControlSettings();
+        CinemachinePOV pov = cinemachineVirtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        pov.m_HorizontalAxis.m_MaxSpeed = slider_x.value;
+        pov.m_VerticalAxis.m_MaxSpeed = slider_y.value;
     }
 }

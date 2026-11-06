@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: 2F Letter
   m_EditorClassIdentifier: 
+  itemId: 5cdd1d363d3a82f4aac852e827b16180
   itemType: 1
   itemName: 2F Letter
   itemIcon_1100_700: {fileID: 21300000, guid: 85b8384caf4531240a273e25c2190599, type: 3}

@@ -11,6 +11,7 @@ public class UIInteract : MonoBehaviour
     private int IsInPos = 0;
     private Camera MainCam;
     private bool IsInside;
+    private bool previousMoveDisabled;
     public GameObject ComputerScreen;
     public GameObject ComputerBackground;
     public GameObject OtherpartOfComputer;
@@ -44,7 +45,7 @@ public class UIInteract : MonoBehaviour
 
     private void Update()
     {
-        if (FocusOnScreen && Input.GetKey(KeyCode.Escape))
+        if (FocusOnScreen && IsInPos == 2 && Input.GetKeyDown(KeyCode.Escape))
         {
             ComputerScreen.GetComponent<GraphicRaycaster>().enabled = false;
             //Alexis added
@@ -66,6 +67,7 @@ public class UIInteract : MonoBehaviour
         else
         {
             communicationSystem.enabled = true;
+            UIClick.enabled = false;
         }
     }
 
@@ -186,6 +188,7 @@ public class UIInteract : MonoBehaviour
         Transformee.rotation = targetRotation;
         //targetTransform.gameObject.SetActive(false);
         IsInPos = 0;
+        PlayerMovement.Instance.moveDisabled = previousMoveDisabled;
         //UseECanvas.SetActive(true);
         MainCam.enabled = true;
         ComputerCamera.enabled = false;

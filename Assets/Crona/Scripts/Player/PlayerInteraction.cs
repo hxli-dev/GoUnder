@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
     public static PlayerInteraction Instance;
+    private void Awake() { Instance = this; }
 
     [Header("Range")]
     public float pickupRange;
@@ -52,7 +53,7 @@ public class PlayerInteraction : MonoBehaviour
 
     void Start()
     {
-        Instance = this;
+
 
         defaultLayerMask = 0;
         pickupLayerMask = 8;

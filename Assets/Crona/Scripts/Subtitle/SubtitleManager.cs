@@ -8,6 +8,7 @@ using TMPro;
 public class SubtitleManager : MonoBehaviour
 {
     public static SubtitleManager Instance;
+    private void Awake() { Instance = this; }
 
     [Header("Manager Current Info")]
     public List<string> currentContent;
@@ -53,7 +54,7 @@ public class SubtitleManager : MonoBehaviour
 
     private void Start()
     {
-        Instance = this;
+
     }
 
     void Update()

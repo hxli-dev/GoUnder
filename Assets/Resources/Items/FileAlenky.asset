@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: FileAlenky
   m_EditorClassIdentifier: 
+  itemId: 309f8ca68a5e4ba478cd6f7ff4fdc8eb
   itemType: 1
   itemName: FileAlenky
   itemIcon_1100_700: {fileID: 21300000, guid: b53978052d5a249ed81297a7a342fd70, type: 3}

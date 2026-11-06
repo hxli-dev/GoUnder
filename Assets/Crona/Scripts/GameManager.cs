@@ -11,6 +11,9 @@ using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    private bool videoTransition;
+    private bool secondFloorEnding;
+    private bool endingStarted;
 
     [Header("Cutscene Control")]
     public bool enableOldCutscenes;
@@ -140,11 +143,20 @@ public class GameManager : MonoBehaviour
     public GameObject collider21;
     public GameObject collider22;
 
+    private void Awake() { Instance = this; }
+
     void Start()
     {
-        Instance = this;
+        Time.timeScale = 1f;
+        InventoryManager inventory = InventoryCanvas.GetComponent<InventoryManager>();
+        inventory.EnsureLoaded();
+        inventory.SaveInventory();
+        GameProgress.EnterFloor(gameObject.scene.name);
+        foreach (MouseLook settings in FindObjectsOfType<MouseLook>(true)) settings.InitializeSettings();
+        foreach (MusicSound settings in FindObjectsOfType<MusicSound>(true)) settings.InitializeSettings();
+        foreach (Brightness settings in FindObjectsOfType<Brightness>(true)) settings.InitializeSettings();
 
-        SceneName = SceneManager.GetActiveScene().name;
+        SceneName = gameObject.scene.name;
         noise = vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
         features = forwardRendererData.rendererFeatures;
@@ -501,8 +513,7 @@ public class GameManager : MonoBehaviour
         whitePanel.SetActive(false);
         blackPanel.SetActive(true);
         openingVideoScreen.SetActive(true);
-        openingVideoPlayer.Play();
-        yield return new WaitForSeconds(50f);
+        yield return PlayCriticalVideo(openingVideoPlayer, 50f);
 
         whitePanel.GetComponent<Image>().color = new Color(255, 255, 255, 0);
         whitePanel.SetActive(true);
@@ -528,6 +539,8 @@ public class GameManager : MonoBehaviour
 
     public void PlayVideo1()
     {
+        if (videoTransition) return;
+        videoTransition = true;
         blackPanel.SetActive(true);
         blackPanel.GetComponent<Image>().color = new Color(0, 0, 0, 1);
 
@@ -549,7 +562,6 @@ public class GameManager : MonoBehaviour
         videoScreen.SetActive(true);
         upperBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -80f);
         lowerBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 80f);
-        cutsceneVideoPlayer.Play();
         StartCoroutine(AfterVideo1());
     }
 
@@ -557,7 +569,7 @@ public class GameManager : MonoBehaviour
     IEnumerator AfterVideo1()
     {
         
-        yield return new WaitForSeconds(28f);
+        yield return PlayCriticalVideo(cutsceneVideoPlayer, 28f);
         Tinylytics.AnalyticsManager.LogThirdFloorPlaytime();
         //player.transform.position = new Vector3(26, 40.4483452f, -34);
         StartCoroutine(LoadSceneF2());
@@ -569,7 +581,8 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadSceneF2()
     {
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF2");
+        InventoryCanvas.GetComponent<InventoryManager>().SaveInventory();
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF2", LoadSceneMode.Single);
 
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)
@@ -582,6 +595,8 @@ public class GameManager : MonoBehaviour
 
     public void StartSecondFloorEnding()
     {
+        if (secondFloorEnding) return;
+        secondFloorEnding = true;
         StartCoroutine(SecondFloorEnding());
     }
 
@@ -620,6 +635,8 @@ public class GameManager : MonoBehaviour
 
     public void PlayVideo2()
     {
+        if (videoTransition) return;
+        videoTransition = true;
         //blackPanel.SetActive(true);
         //blackPanel.GetComponent<Image>().color = new Color(0, 0, 0, 1);
 
@@ -641,7 +658,6 @@ public class GameManager : MonoBehaviour
         videoScreen.SetActive(true);
         upperBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -80f);
         lowerBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 80f);
-        cutsceneVideoPlayer.Play();
         StartCoroutine(AfterVideo2());
     }
 
@@ -649,7 +665,7 @@ public class GameManager : MonoBehaviour
     IEnumerator AfterVideo2()
     {
 
-        yield return new WaitForSeconds(26f);
+        yield return PlayCriticalVideo(cutsceneVideoPlayer, 26f);
         
         //player.transform.position = new Vector3(26, 40.4483452f, -34);
         StartCoroutine(LoadSceneF1());
@@ -661,7 +677,8 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadSceneF1()
     {
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF1");
+        InventoryCanvas.GetComponent<InventoryManager>().SaveInventory();
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainSceneF1", LoadSceneMode.Single);
 
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)
@@ -742,8 +759,8 @@ public class GameManager : MonoBehaviour
 
     public void UnlockPlayerCam()
     {
-        vCam.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 300;
-        vCam.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 300;
+        vCam.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = PlayerPrefs.GetFloat("xAxis", 500f);
+        vCam.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = PlayerPrefs.GetFloat("yAxis", 500f);
     }
 
     /*private void OnApplicationQuit()
@@ -774,6 +791,8 @@ public class GameManager : MonoBehaviour
 
     public void End()
     {
+        if (endingStarted) return;
+        endingStarted = true;
         StartCoroutine(WaitForEnd());
     }
 
@@ -801,9 +820,7 @@ public class GameManager : MonoBehaviour
         
         upperBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -80f);
         lowerBlack.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 80f);
-        endVideoPlayer.Play();
-
-        yield return new WaitForSeconds(55f);
+        yield return PlayCriticalVideo(endVideoPlayer, 55f);
         StartCoroutine(LoadMainScene());
     }
 
@@ -868,4 +885,51 @@ public class GameManager : MonoBehaviour
         collider21.SetActive(true);
         collider22.SetActive(true);
     }
+    // The authored 50/28/26/55-second beats are unchanged on successful playback.
+    // Missing/failed media must not strand the player behind disabled controls.
+    private IEnumerator PlayCriticalVideo(VideoPlayer video, float duration)
+    {
+        if (video == null)
+        {
+            Debug.LogError("Critical video is unassigned; advancing to the next narrative beat.", this);
+            yield break;
+        }
+        bool failed = false;
+        VideoPlayer.ErrorEventHandler onError = (source, message) =>
+        {
+            failed = true;
+            Debug.LogWarning("Critical video failed: " + source.name + ": " + message, source);
+        };
+        video.errorReceived += onError;
+        try
+        {
+            video.Stop();
+            video.Prepare();
+            float preparing = 0f;
+            while (!video.isPrepared && !failed && preparing < 15f)
+            {
+                preparing += Time.unscaledDeltaTime;
+                yield return null;
+            }
+            if (!video.isPrepared || failed)
+            {
+                Debug.LogWarning("Video preparation failed/timed out; advancing: " + video.name, video);
+                yield break;
+            }
+            video.Play();
+            float elapsed = 0f;
+            while (elapsed < duration && !failed)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+        }
+        finally
+        {
+            video.errorReceived -= onError;
+            video.Stop();
+        }
+    }
+
+
 }

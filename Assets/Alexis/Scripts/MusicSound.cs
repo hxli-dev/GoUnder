@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,77 +5,36 @@ public class MusicSound : MonoBehaviour
 {
     public Slider slider_music;
     public Slider slider_sound;
-    private static readonly string FirstPlay = "FirstPlay";
-    private static readonly string BackgroundPref = "BackgroundPref";
-    private static readonly string SoundEffectsPref = "SoundEffectsPref";
-    private int firstPlayInt;
-    private float backgroundFloat;
-    private float soundEffectsFloat;
     public AudioSource[] backgroundAudio;
     public AudioSource[] soundEffectsAudio;
+    private bool initialized;
 
-    void Start()
+    void Start() { InitializeSettings(); }
+
+    public void InitializeSettings()
     {
-        firstPlayInt = PlayerPrefs.GetInt(FirstPlay);
-
-        if (firstPlayInt == 0)
-        {
-            backgroundFloat = 1f;
-            soundEffectsFloat = 1f;
-            PlayerPrefs.SetFloat(BackgroundPref, backgroundFloat);
-            PlayerPrefs.SetFloat(SoundEffectsPref, soundEffectsFloat);
-            PlayerPrefs.SetInt(FirstPlay, -1);
-            slider_music.value = backgroundFloat;
-            slider_sound.value = soundEffectsFloat;
-            for(int j = 0; j < backgroundAudio.Length; j++)
-            {
-                backgroundAudio[j].volume = slider_music.value;
-            }
-            for (int i = 0; i < soundEffectsAudio.Length; i++)
-            {
-                soundEffectsAudio[i].volume = slider_sound.value;
-            }
-        }
-        else
-        {
-            backgroundFloat = PlayerPrefs.GetFloat(BackgroundPref);
-            slider_music.value = backgroundFloat;
-            soundEffectsFloat = PlayerPrefs.GetFloat(SoundEffectsPref);
-            slider_sound.value = soundEffectsFloat;
-            for (int j = 0; j < backgroundAudio.Length; j++)
-            {
-                backgroundAudio[j].volume = slider_music.value;
-            }
-            for (int i = 0; i < soundEffectsAudio.Length; i++)
-            {
-                soundEffectsAudio[i].volume = slider_sound.value;
-            }
-        }
+        if (initialized) return;
+        slider_music.SetValueWithoutNotify(PlayerPrefs.GetFloat("BackgroundPref", 1f));
+        slider_sound.SetValueWithoutNotify(PlayerPrefs.GetFloat("SoundEffectsPref", 1f));
+        initialized = true;
+        UpdateSound();
     }
 
     public void SaveSoundSettings()
     {
-        PlayerPrefs.SetFloat(BackgroundPref, slider_music.value);
-        PlayerPrefs.SetFloat(SoundEffectsPref, slider_sound.value);
+        if (!initialized) return;
+        PlayerPrefs.SetFloat("BackgroundPref", slider_music.value);
+        PlayerPrefs.SetFloat("SoundEffectsPref", slider_sound.value);
+        PlayerPrefs.Save();
     }
 
-    void OnApplicationFocus(bool inFocus)
-    {
-        if (!inFocus)
-        {
-            SaveSoundSettings();
-        }
-    }
-
+    void OnApplicationFocus(bool inFocus) { if (!inFocus) SaveSoundSettings(); }
+    void OnDisable() { SaveSoundSettings(); }
     public void UpdateSound()
     {
-        for (int j = 0; j < backgroundAudio.Length; j++)
-        {
-            backgroundAudio[j].volume = slider_music.value;
-        }
-        for (int i = 0; i < soundEffectsAudio.Length; i++)
-        {
-            soundEffectsAudio[i].volume = slider_sound.value;
-        }
+        if (!initialized) return;
+        foreach (AudioSource source in backgroundAudio) source.volume = slider_music.value;
+        foreach (AudioSource source in soundEffectsAudio) source.volume = slider_sound.value;
+        SaveSoundSettings();
     }
 }

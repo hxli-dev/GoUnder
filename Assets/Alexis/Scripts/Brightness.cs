@@ -5,57 +5,39 @@ using UnityEngine.Rendering.Universal;
 
 public class Brightness : MonoBehaviour
 {
-    public Slider slider; // Reference to the UI slider
-    public Volume globalVolume; // Reference to the Volume component
-
-    private const string FirstPlay = "FirstPlay";
-    private const string ExposurePref = "ExposurePref";
-    private int firstPlayInt;
+    public Slider slider;
+    public Volume globalVolume;
     private ColorAdjustments colorAdjustments;
-    private float exposureFloat;
+    private bool initialized;
 
-    void Start()
+    void Start() { InitializeSettings(); }
+
+    public void InitializeSettings()
     {
-        if (globalVolume.profile.TryGet(out colorAdjustments))
+        if (initialized) return;
+        if (!globalVolume.profile.TryGet(out colorAdjustments))
         {
-            firstPlayInt = PlayerPrefs.GetInt(FirstPlay);
-            if (firstPlayInt == 0) // If the game is played for the first time
-            {
-                exposureFloat = 0.15f; // Default exposure
-                PlayerPrefs.SetFloat(ExposurePref, exposureFloat);
-                PlayerPrefs.SetInt(FirstPlay, -1); // Mark that the game isn't played for the first time anymore
-                slider.value = exposureFloat;
-                UpdateExposure(); // Ensure the exposure gets set
-            }
-            else
-            {
-                exposureFloat = PlayerPrefs.GetFloat(ExposurePref);
-                slider.value = exposureFloat;
-                UpdateExposure(); // Ensure the exposure gets set
-            }
+            Debug.LogError("Brightness requires ColorAdjustments in the assigned Volume.", this);
+            return;
         }
+        slider.SetValueWithoutNotify(PlayerPrefs.GetFloat("ExposurePref", 0.15f));
+        initialized = true;
+        UpdateExposure();
     }
 
     public void SaveExposureSettings()
     {
-        // Save the exposure setting
-        PlayerPrefs.SetFloat(ExposurePref, slider.value);
+        if (!initialized) return;
+        PlayerPrefs.SetFloat("ExposurePref", slider.value);
+        PlayerPrefs.Save();
     }
 
-    void OnApplicationFocus(bool inFocus)
-    {
-        // When the application loses focus, save the exposure setting
-        if (!inFocus)
-        {
-            SaveExposureSettings();
-        }
-    }
-
+    void OnApplicationFocus(bool inFocus) { if (!inFocus) SaveExposureSettings(); }
+    void OnDisable() { SaveExposureSettings(); }
     public void UpdateExposure()
     {
-        if (colorAdjustments)
-        {
-            colorAdjustments.postExposure.value = slider.value;
-        }
+        if (!initialized) return;
+        colorAdjustments.postExposure.value = slider.value;
+        SaveExposureSettings();
     }
 }

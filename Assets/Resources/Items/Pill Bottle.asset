@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: Pill Bottle
   m_EditorClassIdentifier: 
+  itemId: 7cb178c85d6231e4b9408df3e4e797b7
   itemType: 2
   itemName: Pill Bottle
   itemIcon_1100_700: {fileID: 0}

@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
    public void Start()
     {
-        Instance = this;
+
 
         noise = vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         cam6DShakeOn = false;
@@ -99,7 +99,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Keep track of gravity
-        velocity.y += gravity * Time.deltaTime;
+        if (moveDisabled) velocity.y = 0f;
+        else velocity.y += gravity * Time.deltaTime;
 
         if (!moveDisabled)
         {

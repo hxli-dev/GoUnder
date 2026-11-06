@@ -21,7 +21,7 @@ public class ItemPickup : MonoBehaviour
 
     public void Pickup()
     {
-        InventoryManager.Instance.AddItem(itemData);
+        if (!InventoryManager.Instance.TryAddItem(itemData)) return;
 
         //Debug.Log("pickup");
 

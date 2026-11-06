@@ -9,11 +9,11 @@ public class ItemViewer : MonoBehaviour, IDragHandler
 
     private void Update()
     {
-        itemModel.gameObject.SetActive(true);
+        if (itemModel != null) itemModel.gameObject.SetActive(true);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        itemModel.eulerAngles += new Vector3(eventData.delta.y, -eventData.delta.x);
+        if (itemModel != null) itemModel.eulerAngles += new Vector3(eventData.delta.y, -eventData.delta.x);
     }
 }

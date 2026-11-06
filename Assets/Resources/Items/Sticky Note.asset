@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: Sticky Note
   m_EditorClassIdentifier: 
+  itemId: c512254f63e234b40ac186bd72df34a7
   itemType: 2
   itemName: Sticky Note
   itemIcon_1100_700: {fileID: 0}

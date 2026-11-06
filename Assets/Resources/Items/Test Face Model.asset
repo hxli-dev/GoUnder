@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: Test Face Model
   m_EditorClassIdentifier: 
+  itemId: 45c1d326d3682174f90cbd1daff6e9d3
   itemType: 2
   itemName: Test Face Model
   itemIcon_1100_700: {fileID: 0}

@@ -58,253 +58,128 @@ public class InventoryManager : MonoBehaviour
     //[Header("Inventory Metrics")]
     //public int itemCollected;
 
-    private void Awake()
-    {
-        if (isInEditor)
-        {
-            for (int i = 0; i < AtlasItems.Count; i++)
-            {
-                PlayerPrefs.DeleteKey("AtlasItem_" + i);
-            }
+    private bool loaded;
+    private bool saveValid = true;
+    private bool UsesEditorInventory { get { return Application.isEditor && isInEditor; } }
 
-            for (int i = 0; i < FileItems.Count; i++)
-            {
-                PlayerPrefs.DeleteKey("FileItem_" + i);
-            }
+    private void Awake() { Instance = this; }
+    private void OnEnable() { if (GameManager.Instance != null) EnsureLoaded(); }
+    private void OnDisable() { if (loaded && !UsesEditorInventory) SaveInventory(); }
+    private void OnApplicationPause(bool paused) { if (paused && loaded) SaveInventory(); }
+    private void OnApplicationQuit() { if (loaded) SaveInventory(); }
 
-            for (int i = 0; i < UseableItems.Count; i++)
-            {
-                PlayerPrefs.DeleteKey("UseableItem_" + i);
-            }
-        }
-    }
-
-    private void OnEnable()
+    public void EnsureLoaded()
     {
         Instance = this;
-        itemPickup = new List<GameObject>();
-        if (!isInEditor)
-        {
-            LoadInventory();
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (!isInEditor)
-        {
-            SaveInventory();
-        }
-        
+        if (loaded) return;
+        loaded = true;
+        if (!UsesEditorInventory) LoadInventory();
     }
 
     void Update()
     {
         ReminderSlide();
-
         ExitPreviewPanel();
-
     }
 
+    public void AddItem(ItemData_SO data) { TryAddItem(data); }
 
-    public void AddItem(ItemData_SO newItemData)
+    public bool TryAddItem(ItemData_SO data)
     {
-        //itemCollected += 1;
-        if (newItemData.itemType == ItemType.Atlas)
-        {
-            for (int i = 0; i < AtlasItems.Count; i++)
-            {
-                if (AtlasItems[i].itemData == null)
-                {
-                    AtlasItems[i].itemData = newItemData;
-                    AtlasContainer.GetComponent<AtlasContainerUI>().AddItem(newItemData);
-
-                    ShowReminder(newItemData.name, "Info Added");
-                    break;
-                }
-            }
-        }
-
-        if (newItemData.itemType == ItemType.File)
-        {
-            for (int i = 0; i < FileItems.Count; i++)
-            {
-                if (FileItems[i].itemData == null)
-                {
-                    FileItems[i].itemData = newItemData;
-                    FileContainer.GetComponent<FileContainerUI>().AddItem(newItemData);
-
-                    ShowReminder(newItemData.name, "File Added");
-                    if (newItemData.filePreviewSprite_1920_1080 != null){
-                        StartCoroutine(ShowFilePreview(newItemData.filePreviewSprite_1920_1080));
-                    }
-                    
-                    break;
-                }
-            }
-        }
-
-        if (newItemData.itemType == ItemType.Useable)
-        {
-            for (int i = 0; i < UseableItems.Count; i++)
-            {
-                if (UseableItems[i].itemData == null)
-                {
-                    UseableItems[i].itemData = newItemData;
-                    UseableContainer.GetComponent<UseableContainerUI>().AddItem(newItemData);
-
-                    ShowReminder(newItemData.name, "Item Added");
-                    StartCoroutine(ShowItemPreview(newItemData.modelPrefab));
-
-                    break;
-                }
-            }
-        }
-
-        if (newItemData.iconInDoor_135_135 != null){
-            doorItemPages.GetComponent<PageList>().AddItemToDoor(newItemData.iconInDoor_135_135, newItemData.itemName, newItemData.relatedCheckWordNumber);
-        }
-
-
+        EnsureLoaded();
+        if (!AddCore(data)) return false;
+        SaveInventory();
+        string type = data.itemType == ItemType.Atlas ? "Info Added" :
+            data.itemType == ItemType.File ? "File Added" : "Item Added";
+        ShowReminder(data.itemName, type);
+        if (data.itemType == ItemType.File && data.filePreviewSprite_1920_1080 != null)
+            StartCoroutine(ShowFilePreview(data.filePreviewSprite_1920_1080));
+        if (data.itemType == ItemType.Useable && data.modelPrefab != null)
+            StartCoroutine(ShowItemPreview(data.modelPrefab));
+        return true;
     }
 
-    public void AddItemWithoutReminder(ItemData_SO newItemData)
+    public void AddItemWithoutReminder(ItemData_SO data)
     {
-        if (newItemData == null)
-        {
-            return;
-        }
-        //itemCollected += 1;
-
-        if (newItemData.itemType == ItemType.Atlas)
-        {
-            for (int i = 0; i < AtlasItems.Count; i++)
-            {
-                if (AtlasItems[i].itemData == null)
-                {
-                    AtlasItems[i].itemData = newItemData;
-                    AtlasContainer.GetComponent<AtlasContainerUI>().AddItem(newItemData);
-                    if (newItemData.iconInDoor_135_135 != null)
-                    {
-                        doorItemPages.GetComponent<PageList>().AddItemToDoor(newItemData.iconInDoor_135_135, newItemData.itemName, newItemData.relatedCheckWordNumber);
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (newItemData.itemType == ItemType.File)
-        {
-            for (int i = 0; i < FileItems.Count; i++)
-            {
-                if (FileItems[i].itemData == null)
-                {
-                    FileItems[i].itemData = newItemData;
-                    FileContainer.GetComponent<FileContainerUI>().AddItem(newItemData);
-                    if (newItemData.iconInDoor_135_135 != null)
-                    {
-                        doorItemPages.GetComponent<PageList>().AddItemToDoor(newItemData.iconInDoor_135_135, newItemData.itemName, newItemData.relatedCheckWordNumber);
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        if (newItemData.itemType == ItemType.Useable)
-        {
-            for (int i = 0; i < UseableItems.Count; i++)
-            {
-                if (UseableItems[i].itemData == null)
-                {
-                    UseableItems[i].itemData = newItemData;
-                    UseableContainer.GetComponent<UseableContainerUI>().AddItem(newItemData);
-                    if (newItemData.iconInDoor_135_135 != null)
-                    {
-                        doorItemPages.GetComponent<PageList>().AddItemToDoor(newItemData.iconInDoor_135_135, newItemData.itemName, newItemData.relatedCheckWordNumber);
-                    }
-                    break;
-                }
-            }
-        }
-        ItemPickup[] obj = GameObject.FindObjectsOfType<ItemPickup>();
-        foreach (ItemPickup comp in obj)
-        {
-            if (comp.gameObject.name == newItemData.itemName)
-            {
-                Debug.Log(comp.gameObject);
-                Destroy(comp.gameObject);
-            }
-
-        }
-        obj = null;
+        EnsureLoaded();
+        AddCore(data);
+        RemoveCollectedPickups(data);
     }
 
-    private void SaveInventory()
+    private bool AddCore(ItemData_SO data)
     {
-        for (int i = 0; i < AtlasItems.Count; i++)
+        if (data == null) return false;
+        List<InventoryItem> items = data.itemType == ItemType.Atlas ? AtlasItems :
+            data.itemType == ItemType.File ? FileItems : UseableItems;
+        foreach (InventoryItem item in items)
+            if (item != null && item.itemData == data) return false;
+        InventoryItem slot = items.Find(item => item != null && item.itemData == null);
+        if (slot == null)
         {
-            SaveItem("AtlasItem_" + i, AtlasItems[i]);
+            Debug.LogError("Inventory is full; pickup was not consumed: " + data.name, this);
+            return false;
         }
+        slot.itemData = data;
+        if (data.itemType == ItemType.Atlas) AtlasContainer.GetComponent<AtlasContainerUI>().AddItem(data);
+        else if (data.itemType == ItemType.File) FileContainer.GetComponent<FileContainerUI>().AddItem(data);
+        else UseableContainer.GetComponent<UseableContainerUI>().AddItem(data);
+        if (data.iconInDoor_135_135 != null)
+            doorItemPages.GetComponent<PageList>().AddItemToDoor(data.iconInDoor_135_135, data.itemName, data.relatedCheckWordNumber);
+        return true;
+    }
 
-        for (int i = 0; i < FileItems.Count; i++)
-        {
-            SaveItem("FileItem_" + i, FileItems[i]);
-        }
+    private void RemoveCollectedPickups(ItemData_SO data)
+    {
+        if (data == null) return;
+        // Compare the serialized asset, never a potentially renamed GameObject.
+        foreach (ItemPickup pickup in FindObjectsOfType<ItemPickup>(true))
+            if (pickup.itemData == data) Destroy(pickup.gameObject);
+    }
 
-        for (int i = 0; i < UseableItems.Count; i++)
-        {
-            SaveItem("UseableItem_" + i, UseableItems[i]);
-        }
+    [Serializable]
+    private class SavedInventory
+    {
+        public List<string> ids = new List<string>();
+    }
+
+    public void SaveInventory()
+    {
+        if (!loaded || !saveValid || UsesEditorInventory) return;
+        SavedInventory saved = new SavedInventory();
+        foreach (List<InventoryItem> items in new[] { AtlasItems, FileItems, UseableItems })
+            foreach (InventoryItem item in items)
+                if (item != null && item.itemData != null) saved.ids.Add(item.itemData.Id);
+        PlayerPrefs.SetString(GameProgress.InventoryKey, JsonUtility.ToJson(saved));
         PlayerPrefs.Save();
     }
 
-    private void SaveItem(string key, InventoryItem item)
+    private void LoadInventory()
     {
-        if (item != null && item.itemData != null)
+        if (PlayerPrefs.HasKey(GameProgress.InventoryKey))
         {
-            PlayerPrefs.SetString(key, item.itemData.itemName);
+            string json = PlayerPrefs.GetString(GameProgress.InventoryKey, "");
+            if (string.IsNullOrEmpty(json)) return;
+            SavedInventory saved;
+            try { saved = JsonUtility.FromJson<SavedInventory>(json); }
+            catch (ArgumentException error)
+            {
+                saveValid = false;
+                Debug.LogError("Invalid inventory save; retained for recovery: " + error.Message, this);
+                return;
+            }
+            if (saved != null && saved.ids != null)
+                foreach (string id in saved.ids) AddItemWithoutReminder(ItemData_SO.LoadItemDataByName(id));
         }
         else
         {
-            PlayerPrefs.DeleteKey(key);
+            foreach (string category in new[] { "AtlasItem_", "FileItem_", "UseableItem_" })
+                for (int i = 0; i < 20; i++)
+                {
+                    string legacy = PlayerPrefs.GetString(category + i, "");
+                    if (!string.IsNullOrEmpty(legacy)) AddItemWithoutReminder(ItemData_SO.LoadItemDataByName(legacy));
+                }
         }
     }
-
-
-    private void LoadInventory()
-    {
-        for (int i = 0; i < AtlasItems.Count; i++)
-        {
-            string itemName = PlayerPrefs.GetString("AtlasItem_" + i, "");
-            if (!string.IsNullOrEmpty(itemName))
-            {
-                ItemData_SO itemData = ItemData_SO.LoadItemDataByName(itemName);
-                AddItemWithoutReminder(itemData);
-            }
-        }
-
-        for (int i = 0; i < FileItems.Count; i++)
-        {
-            string itemName = PlayerPrefs.GetString("FileItem_" + i, "");
-            if (!string.IsNullOrEmpty(itemName))
-            {
-                ItemData_SO itemData = ItemData_SO.LoadItemDataByName(itemName);
-                AddItemWithoutReminder(itemData);
-            }
-        }
-
-        for (int i = 0; i < UseableItems.Count; i++)
-        {
-            string itemName = PlayerPrefs.GetString("UseableItem_" + i, "");
-            if (!string.IsNullOrEmpty(itemName))
-            {
-                ItemData_SO itemData = ItemData_SO.LoadItemDataByName(itemName);
-                AddItemWithoutReminder(itemData);
-            }
-        }
-    }
-
 
     public void ShowReminder(string title, string type)
     {

@@ -119598,7 +119598,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider_x: {fileID: 555072475}
   slider_y: {fileID: 692997959}
-  cinemachineVirtualCamera: {fileID: 0}
+  cinemachineVirtualCamera: {fileID: 1258917341}
 --- !u!114 &719208049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168536,7 +168536,8 @@ MonoBehaviour:
   slider_music: {fileID: 483366162}
   slider_sound: {fileID: 794680681}
   backgroundAudio:
-  - {fileID: 0}
+  - {fileID: 1212824387}
+  - {fileID: 734699395}
   soundEffectsAudio:
   - {fileID: 1931906726}
   - {fileID: 2089502955}
@@ -275042,7 +275043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 520083562}
-  globalVolume: {fileID: 0}
+  globalVolume: {fileID: 1927502135}
 --- !u!114 &1761678655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -384663,6 +384664,7 @@ MonoBehaviour:
   AnswerStage: 0
   InboxMail: {fileID: 8955185062985708472}
   F1DoorAnimator: {fileID: 0}
+  usesLegacyFloorDoor: 0
 --- !u!222 &8955185063270381693
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2c350add0de446fbe4ee3bd2f91b5a, type: 3}
   m_Name: UMA Manual
   m_EditorClassIdentifier: 
+  itemId: 4edbda8add73b1b49bef03d9c934807f
   itemType: 2
   itemName: UMA Manual
   itemIcon_1100_700: {fileID: 0}

@@ -9,6 +9,7 @@ public class ItemDrag : MonoBehaviour
     private Vector3 originalPos;
     public CheckText checkText;
     private bool selected;
+    private bool consumed;
 
     public AudioSource wrongChoiceAlert;
 
@@ -23,9 +24,10 @@ public class ItemDrag : MonoBehaviour
     {
         if (checkText != null)
         {
-            if (checkText.matches)
+            if (checkText.matches && !consumed)
             {
                 
+                consumed = true;
                 gameObject.GetComponentInParent<ItemList>().itemsInThisPage -= 1;
                 if (gameObject.GetComponentInParent<ItemList>().itemsInThisPage == 0 && transform.parent.name != "Page1")
                 {
