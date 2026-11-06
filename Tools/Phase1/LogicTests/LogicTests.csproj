@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><LangVersion>8.0</LangVersion></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../Assets/Crona/Scripts/GameProgress.cs" />
+    <Compile Include="../../../Assets/Crona/Scripts/Inventory/Item/ScriptableObject/ItemData_SO.cs" />
+  </ItemGroup>
+</Project>
+
